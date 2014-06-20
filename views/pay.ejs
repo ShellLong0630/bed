@@ -1,0 +1,72 @@
+<%- include header %>
+<%- include calendar%>
+			//定义条形图
+			var w = 600;
+			var  h = key.length*20;
+			
+			//添加比例尺
+			max = d3.max(values, function(d,i) { return values[i];});
+			var xscale = d3.scale.linear()
+									     .domain([0,key.length])
+									     .range([0, h]);
+			var  yscale = d3.scale.linear()
+									 .domain([0, max])
+									 .range([0,w]);
+									 
+			//创建svg的条形图
+			var padding=20;
+			var sort=0;
+			var svg = d3.select("body")
+							.append("svg")
+							.attr("width", w+610)
+							.attr("height", h+100)
+			svg.selectAll("rect")
+				   .data(values)
+				   .enter()
+				   .append("rect")
+				   .attr("y", function (d,i){
+						return i*15+10;
+				   })
+				   .attr("x", function (d,i){
+						return 100;})
+				   .attr("height", 10)
+				   .attr("fill",function(d,i){return "rgb(113,180,254)";})			   
+				   .attr("width", function (d,i){
+					return yscale(values[i]);
+				   })
+				   .sort(function (a,b){return d3.descending(a,b);})
+				   .transition()
+				  // .duration(1000)
+				   .attr("y",function (d,i){return i*padding+20;});
+				   
+			   //加标签
+				svg.selectAll("text")
+					  .data(values)
+					  .enter()
+					  .append("text")
+					  .text(function (d,i){return values[i]+"（"+key[i]+"）";})
+					  .attr({
+						y: function (d,i){return i*padding+30;},
+						x: function(d,i){return yscale(values[i])+120;},
+						fill:"rgb(113,130,204)",
+						"font-size": "15px",
+						"font-weight": "lighter",
+						"text-anchor": "middle"+20
+					  })
+					  .sort(function (a,b){return d3.descending(a,b);})
+					  .transition()
+				//	  .duration(1000)
+					  .attr("y",function (d,i){return i*padding+30;});
+				for(var i=0;i<key.length;i++){
+				  svg.append("text")
+					.attr({
+							y: i*padding+30,
+							"font-size": "15px",
+							fill:"rgb(93,120,234)",
+							x: 60})
+					.text(i+1);
+				};
+						
+									  
+		</script>	
+<%- include footer%>

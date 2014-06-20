@@ -1,0 +1,101 @@
+﻿<%- include header %>
+
+<%- include calendar%>
+			var gift = {1:["安全诱惑",0],
+							2:["步步高升",0],
+							3:["立方咖啡",0],
+							4:["甜甜圈",0],
+							5:["卫生纸君",0],
+							6:["性感吊带",0],
+							7:["许愿瓶",0],
+							8:["拥抱梦乡",0],
+							9:["一吻定情",0.2],
+							10:["包藏我心",0.5],
+							11:["一见钟情",1],
+							12:["跳支舞吧",1.5],
+							13:["土豪来电",2],
+							14:["寻觅知音",3],
+							15:["嫁给我吧",4],
+							16:["我的公主",5],
+							17:["意醉情迷",10],
+							18:["陪你兜风",20]};
+			//////////////////////////////////////////////
+			var w = 600;
+			var  h = key.length*26;
+			var sum=d3.sum(values, function(d,i) { return values[i];});
+			
+			//添加比例尺
+			max = d3.max(values, function(d,i) { return values[i];});
+				     var xscale = d3.scale.linear()
+													     .domain([0,key.length])
+													     .range([0, h]);
+			var  yscale = d3.scale.linear()
+														 .domain([0, max])
+														 .range([0,w]);
+												 
+		   //创建svg的条形图
+		   var padding=30;
+		   var sort=0;
+		   var svg = d3.select("body")
+							.append("svg")
+							.attr("width", w+560)
+							.attr("height", h+100)
+			svg.selectAll("rect")
+				   .data(values)
+				   .enter()
+				   .append("rect")
+				   .attr("y", function (d,i){
+							return i*15+10;
+				   })
+				   .attr("x", function (d,i){
+							return 100;})
+				   .attr("height", 14)
+				   .attr("fill",function(d,i){return "rgb(113,180,254)";})					   
+				   .attr("width", function (d,i){
+						return yscale(values[i]);
+				   })
+				   .sort(function (a,b){return d3.descending(a,b);})
+				   .transition()
+				  // .duration(1000)
+				   .attr("y",function (d,i){return i*padding+20;});
+				   
+			   //加标签
+				svg.selectAll("text")
+					  .data(values)
+					  .enter()
+					  .append("text")
+					  .text(function(d,i){
+									if (gift[key[i]][1]>0){
+										return values[i]+" x "+gift[key[i]][1]+"元 >>> "+gift[key[i]][0]+"（"+(values[i]/sum*100).toFixed(5)+"%）";}
+									else{
+										return values[i]+" >>> "+gift[key[i]][0]+"（"+(values[i]/sum*100).toFixed(5)+"%）";
+									}})
+					  .attr({
+								y: function (d,i){return i*padding+33;},
+								x: function(d,i){return yscale(values[i])+120;},
+								fill: function(d,i){
+									if (gift[key[i]][1]>0){
+										return "rgb(248,53,32)";}
+									else{
+										return "rgb(113,130,204)";
+									}},
+								"font-size": "15px",
+								"font-weight": "lighter",
+								"text-anchor": "middle"+20
+					  })
+					  .sort(function (a,b){return d3.descending(a,b);})
+					  .transition()
+					  .attr("y",function (d,i){return i*padding+33;});
+				for(var i=0;i<key.length;i++){
+				  svg.append("text")
+						.attr({
+									y: i*padding+33,
+									"font-size": "15px",
+									fill:"rgb(93,120,234)",
+									x: 60})
+						.text(i+1);
+				};
+				
+							  
+		</script>	
+<%- include footer%>

@@ -1,0 +1,182 @@
+<%- include header%>
+<%- include calendar_user%>
+if (month!=0){var parseDate = d3.time.format("%Y-%m-%d").parse;}else{var parseDate = d3.time.format("%Y-%m").parse;};
+var max;
+var date = [<%- key%>];
+//console.log(<%- value%>)
+var close=[<%= value%>];
+var data = Array.apply(0,Array(<%= day%>)).map(function(item,i){	
+	return {date:date[i],close:close[i]};
+	i++;
+});	
+data.forEach(function(data) {
+    data.date = parseDate(data.date);
+	//console.log(d3.time.format("%m")(data.date));
+    //data.close = +data.close;
+  });
+  
+//max0 = d3.max(close, function (d,i) { return close[i]; })
+
+//data1
+var date1 = [<%- key1%>];
+var close1=[<%= value1%>];
+var data1 = Array.apply(0,Array(<%= day%>)).map(function(item,i){	
+	return {date:date1[i],close:close1[i]};
+	i++;
+});	
+data1.forEach(function(data1) {
+    data1.date = parseDate(data1.date);
+    //data1.close = +data1.close;
+  });
+  
+//data2
+//var date2 = [<%- key%>];
+//var close2=[<%= value%>];
+var data2 = Array.apply(0,Array(<%= day%>)).map(function(item,i){	
+	return {date:date[i],close:(close[i]+close1[i])};
+	i++;
+});	
+data2.forEach(function(data2) {
+    data2.date = parseDate(data2.date);
+    //data2.close = +data2.close;
+  });
+  
+max = d3.max(data2, function (d) { return d.close; })
+
+var linefunction = d3.svg.line()
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.close); })
+	.interpolate('monotone');
+	
+var margin = {top: 20, right: 120, bottom: 130, left: 120},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+//console.log(data);
+var x = d3.time.scale()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+  x.domain(d3.extent(data,  function(d) { return d.date; }));
+  y.domain([0,max]);
+
+<%- include tips%>	
+
+  svg.append("g")
+      .attr({
+		  fill: "none",
+		  stroke: "rgb(62,131,25)",
+		  "shape-rendering": "crispEdges",
+		  "font-size":"12px"
+	  })
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr({
+		  fill: "none",
+		  stroke: "rgb(62,131,25)",
+		  "shape-rendering": "crispEdges",
+		  "font-size":"15px"
+	  })
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+	  .attr("font-size","15px")
+      .text("Num");
+	//legend
+	svg.append('g')
+        .append('circle')
+        .attr('fill', "rgb(253,185,63)")
+        .attr('cx', 750)
+        .attr('cy', 50)
+        .attr('r', 8)
+	svg.append("text")
+      .attr("y", 57.5)
+	  .attr("x", 775)
+	  .attr("fill","rgb(253,185,63)")
+	  .attr("font-size","20px")
+      .text("Total");
+	svg.append('g')
+        .append('circle')
+        .attr('fill', "rgb(27,73,152)")
+        .attr('cx', 750)
+        .attr('cy', 100)
+        .attr('r', 8)
+	svg.append("text")
+      .attr("y", 107.5)
+	  .attr("x", 775)
+	  .attr("font-size","20px")
+	  .attr('fill', "rgb(27,73,152)")
+      .text("Male");
+	svg.append('g')
+        .append('circle')
+        .attr('fill', "rgb(242,76,144)")
+        .attr('cx', 750)
+        .attr('cy', 150)
+        .attr('r', 8)
+	svg.append("text")
+      .attr("y", 157.5)
+	  .attr("x", 775)
+	  .attr('fill', "rgb(242,76,144)")
+	  .attr("font-size","20px")
+      .text("Female");
+	  
+	//男女总比例
+	var female_text;
+	if (d3.sum(close,function(d,i){return close[i]+close1[i];})>0){
+			female_text = (d3.sum(close,function(d,i){return close[i];})/d3.sum(close,function(d,i){return close[i]+close1[i];})*100).toFixed(2);
+		 }else{
+			female_text = 50;
+		};
+	var male_text;
+	if (d3.sum(close,function(d,i){return close[i]+close1[i];})>0){
+			male_text = (d3.sum(close1,function(d,i){return close1[i];})/d3.sum(close,function(d,i){return close[i]+close1[i];})*100).toFixed(2);
+		 }else{
+			male_text = 50;
+		};
+
+	svg.append('g')
+        .append('circle')
+        .attr('fill', "rgb(53,126,186)")
+        .attr('cx', 940)
+        .attr('cy', 300)
+        .attr('r', 30)
+	svg.append('g')
+        .append('circle')
+		.attr('fill', "rgb(28,91,166)")
+        .attr('cx', 940)
+        .attr('cy', 300)
+        .attr('r', 12)
+	svg.append("rect")
+	    .attr("transform", "rotate("+(0.4*(50-male_text))+" 940,270)")
+		.attr("y",252)
+		.attr("x",760)
+		.attr('fill', "rgb(53,126,186)")
+		.attr("height", 18)	
+		.attr("width", 360)	;
+	svg.append("text")
+      .attr("y", 235+(female_text-50)*0.8)
+	  .attr("x", 1030)
+	  .attr("fill","rgb(242,76,144)")
+	  .attr("font-size","25px")
+      .text(female_text+"%");
+	 svg.append("text")     
+	  .attr("y", 235+(male_text-50)*0.8)
+	  .attr("x", 775)
+	  .attr("fill","rgb(27,73,152)")
+	  .attr("font-size","25px")
+      .text(male_text+"%");
+</script>

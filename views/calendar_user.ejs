@@ -1,0 +1,117 @@
+﻿	<br />
+		<div id="calendar">
+		<ul>
+			<p><font color="rgb(27,33,130)">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspYear &nbsp&nbsp  : &nbsp&nbsp&nbsp
+			<select id='year' >
+			  <option value ="2008" onchange=getselect() name="year">2008</option>
+			  <option value ="2009" onchange=getselect() name="year">2009</option>
+			  <option value ="2010" onchange=getselect() name="year">2010</option>
+			  <option value ="2011" onchange=getselect() name="year">2011</option>
+			  <option value ="2012" onchange=getselect() name="year">2012</option>
+			  <option value ="2013" onchange=getselect() name="year">2013</option>
+			  <option value ="2014" onchange=getselect() name="year">2014</option>
+			</select>
+			  <text  id="byyear" font-size="20px" onclick=byYear()>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<u>查看所有月份</u></text></p>
+			<p><font color="rgb(27,73,152)">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspMonth   :
+					<label for="m1">&nbsp&nbsp&nbsp&nbsp&nbsp01 :</label>
+					<input type="radio" value=1 onclick=getradio() name="month" id="m1" />
+					<label for="m2"> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp02 :</label>
+					<input type="radio" value=2 onclick=getradio() name="month" id="m2" />
+					<label for="m3">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp03 :</label>
+					<input type="radio" value=3 onclick=getradio() name="month" id="m3" />
+					<label for="m4">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp04 :</label>
+					<input type="radio" value=4 onclick=getradio() name="month" id="m4" />
+					<label for="m5">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp05 :</label>
+					<input type="radio" value=5 onclick=getradio() name="month" id="m5" />
+					<label for="m6">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp06 :</label>
+					<input type="radio" value=6 onclick=getradio() name="month" id="m6" />
+					<label for="m7">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp07 :</label>
+					<input type="radio" value=7 onclick=getradio() name="month" id="m7" />
+					<label for="m8">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp08 :</label>
+					<input type="radio" value=8 onclick=getradio() name="month" id="m8" />
+					<label for="m9">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp09 :</label>
+					<input type="radio" value=9 onclick=getradio() name="month" id="m9" />
+					<label for="m10">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp10 :</label>
+					<input type="radio" value=10 onclick=getradio() name="month" id="m10" />
+					<label for="m11">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp11 :</label>
+					<input type="radio" value=11 onclick=getradio() name="month" id="m11" />
+					<label for="m12">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp12 :</label>
+					<input type="radio" value=12 onclick=getradio() name="month" id="m12" /></p>
+		</ul>
+		</div>
+		<script  type="text/javascript" >
+
+			year = <%= year%>
+			month = <%= month%>;
+			if(month!=0){//设置当前月份的radio为选中状态
+			document.getElementById("m"+month).checked=true;};
+					
+			document.getElementById("year")[year-2008].selected=true;
+			var cutLine = d3.select("body")
+									.append("svg")
+									.attr("width", 1250)
+									.attr("height", 5)
+			cutLine.append("rect")
+				.attr("y",2)
+				.attr("x",60)
+				.attr('fill', "rgb(165,215,160)")
+				.attr("height", 2)	
+				.attr("width", 1050)	;
+			//判断闰年
+			function LeapYear(y){
+				return (0==y%4&&((y%100!=0)||(y%400==0)));   
+			}
+			if (LeapYear(year)){
+				var day_num = {1:31,2:29,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
+			}else{
+				var day_num = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
+			}	
+			//calendar
+
+			//选择月份后链接跳转
+			function getradio(){
+				var   obj   =   document.getElementsByName('month');   
+				  for   (i=0;i<obj.length;i++){   
+				  if   (obj[i].checked){   
+				  month=obj[i].value; 
+				  location.replace("http://192.168.50.63:3000/<%= event%>/"+document.getElementById('year').value+"/"+FormatNum(month.toString(),2)+"/"+day_num[month]);
+				  return;   
+				  }     
+
+				};	
+			};
+			//年份赋值
+			function getselect(){
+				var   obj   =   document.getElementsByName('year');   
+				//console.log(obj)
+				  for   (i=0;i<obj.length;i++){   
+				  if   (obj[i].selected){   
+				  year=obj[i].value; 
+				  //console.log(year)
+				  return;   
+				  }     
+
+				};	
+			};
+			
+			function byYear(){
+				var   obj   =   document.getElementsByName('year');   
+				//console.log(obj)
+				  for   (i=0;i<obj.length;i++){   
+				  if   (obj[i].selected){   
+				  year=obj[i].value; 
+				  location.replace("http://192.168.50.63:3000/<%= event%>/"+document.getElementById('year').value);
+				  //console.log("http://192.168.50.63:3000/<%= event%>/"+document.getElementById('year').value);
+				  return;   
+				  }     
+
+				};	
+			};
+			//补零从而使数字为固定长度
+			function FormatNum(Source,Length){ 
+				var strTemp=""; 
+				for(i=1;i<=Length-Source.length;i++){ 
+				strTemp+="0"; 
+				} 
+				return strTemp+Source; 
+			} 
